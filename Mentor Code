@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MENTOR</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0a;--s1:#111;--s2:#1a1a1a;--acc:#ff4d00;--acc2:#ffb300;--txt:#f0f0f0;--muted:#555;--brd:#222;--green:#00e676}
+body{background:var(--bg);color:var(--txt);font-family:'Barlow',sans-serif;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+#header{padding:14px 20px;border-bottom:1px solid var(--brd);display:flex;align-items:center;flex-shrink:0}
+.logo{font-family:'Bebas Neue',cursive;font-size:36px;letter-spacing:4px;background:linear-gradient(135deg,var(--acc),var(--acc2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo-sub{font-size:9px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-top:-4px}
+.streak{margin-left:auto;background:var(--s2);border:1px solid var(--brd);border-radius:8px;padding:8px 14px;text-align:center}
+.streak-n{font-family:'Bebas Neue',cursive;font-size:26px;color:var(--acc2);line-height:1}
+.streak-l{font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
+#tabs{display:flex;border-bottom:1px solid var(--brd);flex-shrink:0}
+.tab-btn{flex:1;padding:12px;border:none;background:none;color:var(--muted);font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
+.tab-btn.active{color:var(--acc);border-bottom-color:var(--acc)}
+.panel{display:none;flex:1;overflow-y:auto;flex-direction:column}
+.panel.active{display:flex}
+#chat-msgs{flex:1;overflow-y:auto;padding:18px 16px;display:flex;flex-direction:column;gap:14px}
+.msg{display:flex;gap:10px;animation:fadeUp .25s ease}
+.msg.user{flex-direction:row-reverse}
+.av{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:12px}
+.av.m{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#000}
+.av.u{background:var(--s2);border:1px solid var(--brd);color:var(--muted)}
+.bubble{max-width:78%;padding:11px 15px;border-radius:10px;font-size:14px;line-height:1.7}
+.msg.mentor .bubble{background:var(--s2);border:1px solid var(--brd);border-top-left-radius:2px}
+.msg.user .bubble{background:#1a0800;border:1px solid #3a1a00;border-top-right-radius:2px}
+.bubble b{color:var(--acc2)}
+.bubble i{color:var(--acc);font-style:normal;font-weight:600}
+.typing-dots{display:flex;gap:5px;padding:11px 15px;background:var(--s2);border:1px solid var(--brd);border-radius:10px;border-top-left-radius:2px}
+.typing-dots span{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:bounce 1.2s infinite}
+.typing-dots span:nth-child(2){animation-delay:.2s}
+.typing-dots span:nth-child(3){animation-delay:.4s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0);background:var(--muted)}30%{transform:translateY(-5px);background:var(--acc)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+#chat-input-area{padding:12px 16px;border-top:1px solid var(--brd);background:var(--s1);display:flex;gap:10px;flex-shrink:0}
+#chat-input{flex:1;background:var(--s2);border:1px solid var(--brd);border-radius:10px;padding:11px 14px;color:var(--txt);font-family:'Barlow',sans-serif;font-size:14px;resize:none;outline:none;min-height:44px;max-height:100px}
+#chat-input:focus{border-color:var(--acc)}
+#send-btn{background:var(--acc);border:none;border-radius:10px;width:44px;height:44px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+#check-panel{padding:20px 16px}
+.sec-title{font-size:10px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:14px;font-weight:700}
+.check-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #161616;cursor:pointer}
+.check-box{width:22px;height:22px;border-radius:5px;border:2px solid var(--brd);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#000;transition:all .2s}
+.check-item.done .check-box{background:var(--green);border-color:var(--green)}
+.check-item.done .check-txt{text-decoration:line-through;color:var(--muted)}
+.check-txt{font-size:14px}
+.check-emoji{font-size:17px}
+.prog-wrap{background:var(--s2);border-radius:100px;height:6px;margin:14px 0 6px;overflow:hidden}
+.prog-bar{height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2));border-radius:100px;transition:width .5s}
+.prog-lbl{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+.quote-box{background:#0f0800;border:1px solid #2a1200;border-left:3px solid var(--acc);border-radius:8px;padding:14px 16px;margin-top:24px}
+.quote-txt{font-size:13px;line-height:1.6;color:#bbb;font-style:italic}
+.quote-auth{font-size:11px;color:var(--acc);margin-top:8px;letter-spacing:2px;text-transform:uppercase}
+#quick-panel{padding:20px 16px}
+.quick-btn{background:var(--s2);border:1px solid var(--brd);border-radius:8px;padding:13px 16px;color:var(--txt);font-family:'Barlow',sans-serif;font-size:14px;cursor:pointer;text-align:left;width:100%;margin-bottom:10px;transition:all .15s}
+.quick-btn:hover{border-color:var(--acc);background:#1a0800;color:var(--acc2)}
+</style>
+</head>
+<body>
+<div id="header">
+  <div>
+    <div class="logo">MENTOR</div>
+    <div class="logo-sub">Kein Mitleid. Nur Fortschritt.</div>
+  </div>
+  <div class="streak">
+    <div class="streak-n" id="streakN">🔥0</div>
+    <div class="streak-l">Streak</div>
+  </div>
+</div>
+<div id="tabs">
+  <button class="tab-btn active" onclick="showTab('chat')">💬 Mentor</button>
+  <button class="tab-btn" onclick="showTab('check')">✅ Heute</button>
+  <button class="tab-btn" onclick="showTab('quick')">⚡ Quick</button>
+</div>
+<div id="chat" class="panel active" style="flex-direction:column">
+  <div id="chat-msgs"></div>
+  <div id="chat-input-area">
+    <textarea id="chat-input" placeholder="Schreib deinem Mentor..." rows="1"></textarea>
+    <button id="send-btn" onclick="handleSend()">
+      <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.269 20.876L5.999 12zm0 0h7.5"/>
+      </svg>
+    </button>
+  </div>
+</div>
+<div id="check" class="panel">
+  <div id="check-panel">
+    <div class="sec-title">Heutige Aufgaben</div>
+    <div id="checklist"></div>
+    <div class="prog-wrap"><div class="prog-bar" id="progBar" style="width:0%"></div></div>
+    <div class="prog-lbl"><span id="progTxt">0 / 6 erledigt</span><span id="progPct">0%</span></div>
+    <div class="quote-box">
+      <div class="quote-txt" id="quoteTxt"></div>
+      <div class="quote-auth" id="quoteAuth"></div>
+    </div>
+  </div>
+</div>
+<div id="quick" class="panel">
+  <div id="quick-panel">
+    <div class="sec-title">Schnell-Aktionen</div>
+    <button class="quick-btn" onclick="quickMsg('Gib mir einen Motivations-Schuss – Goggins-Style!')">⚡ Motivations-Schuss</button>
+    <button class="quick-btn" onclick="quickMsg('Ich habe heute geschludert. Was jetzt?')">💀 Ich hab heute versagt</button>
+    <button class="quick-btn" onclick="quickMsg('Gib mir eine Spanisch-Übung für absolute Anfänger.')">🇪🇸 Spanisch-Übung</button>
+    <button class="quick-btn" onclick="quickMsg('Gib mir ein einfaches gesundes Rezept für heute.')">🥗 Gesundes Rezept</button>
+    <button class="quick-btn" onclick="quickMsg('Empfiehl mir ein Buch das mein Leben verändern kann.')">📖 Buchempfehlung</button>
+    <button class="quick-btn" onclick="quickMsg('Gib mir einen Tipp für mein Café-Projekt in Düsseldorf-Unterrath.')">☕ Café-Tipp</button>
+  </div>
+</div>
+<script>
+const QUOTES=[
+  {t:"Schmerz ist vorübergehend. Aufgeben dauert ewig.",a:"David Goggins"},
+  {t:"Wenn du denkst, du kannst nicht mehr – du bist erst bei 40 Prozent.",a:"David Goggins"},
+  {t:"Du bist nicht das Produkt deiner Umstände. Du bist das Produkt deiner Entscheidungen.",a:"Tony Robbins"},
+  {t:"Dein Leben verändert sich nicht wenn du etwas weißt. Es verändert sich wenn du handelst.",a:"Tony Robbins"},
+  {t:"Disziplin ist die Brücke zwischen Zielen und Erfolg.",a:"Jim Rohn"},
+  {t:"Wer aufhört, besser zu werden, hat aufgehört, gut zu sein.",a:"Philip Rosenthal"},
+];
+const ITEMS=[
+  {id:"handy",e:"📵",t:"30 Min kein Handy morgens"},
+  {id:"wasser",e:"💧",t:"Glas Wasser beim Aufstehen"},
+  {id:"sport",e:"💪",t:"Bewegung / Sport heute"},
+  {id:"spanisch",e:"🇪🇸",t:"20 Min Spanisch gelernt"},
+  {id:"lesen",e:"📖",t:"20+ Seiten gelesen"},
+  {id:"ernaehrung",e:"🥗",t:"Bewusste Ernährung heute"},
+];
+const SYSTEM="Du bist MENTOR – persönlicher Lebensmentor mit der Direktheit von David Goggins und der Energie von Tony Robbins. Dein Schüler heißt Thomas, lebt in Düsseldorf. Seine Ziele: Abnehmen & Sport, Spanisch lernen (Anfänger), Bücher lesen, gesünder essen, Zeit effektiver nutzen, Café in Düsseldorf-Unterrath eröffnen. Stil: direkt, ehrlich, keine Ausreden – aber aufbauend und visionär. 50% Goggins, 50% Robbins. Deutsch mit gelegentlichen englischen Power-Phrasen. Max 3-4 Absätze. Jeder Satz soll sitzen.";
+let history=[],streak=parseInt(localStorage.getItem('streak')||'0'),checks=JSON.parse(localStorage.getItem('checks')||'{}'),lastDate=localStorage.getItem('lastDate')||'';
+function todayKey(){const d=new Date();return d.getFullYear()+'-'+d.getMonth()+'-'+d.getDate();}
+function showTab(n){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(n).classList.add('active');
+  document.querySelectorAll('.tab-btn')[['chat','check','quick'].indexOf(n)].classList.add('active');
+}
+function renderChecklist(){
+  const today=todayKey();if(!checks[today])checks[today]={};
+  const el=document.getElementById('checklist');el.innerHTML='';
+  ITEMS.forEach(item=>{
+    const done=!!checks[today][item.id];
+    const div=document.createElement('div');div.className='check-item'+(done?' done':'');
+    div.innerHTML='<div class="check-box">'+(done?'✓':'')+'</div><span class="check-emoji">'+item.e+'</span><span class="check-txt">'+item.t+'</span>';
+    div.onclick=function(){checks[today][item.id]=!checks[today][item.id];localStorage.setItem('checks',JSON.stringify(checks));checkStreak();renderChecklist();};
+    el.appendChild(div);
+  });
+  const done=Object.values(checks[today]).filter(Boolean).length,pct=Math.round(done/ITEMS.length*100);
+  document.getElementById('progBar').style.width=pct+'%';
+  document.getElementById('progTxt').textContent=done+' / '+ITEMS.length+' erledigt';
+  document.getElementById('progPct').textContent=pct+'%';
+}
+function checkStreak(){
+  const today=todayKey(),done=Object.values(checks[today]||{}).filter(Boolean).length;
+  if(done>=3&&lastDate!==today){streak++;lastDate=today;localStorage.setItem('streak',streak);localStorage.setItem('lastDate',lastDate);document.getElementById('streakN').textContent='🔥'+streak;}
+}
+function addMsg(role,text){
+  const wrap=document.getElementById('chat-msgs'),div=document.createElement('div');
+  div.className='msg '+role;
+  const av=document.createElement('div');av.className='av '+(role==='mentor'?'m':'u');av.textContent=role==='mentor'?'M':'T';
+  const bub=document.createElement('div');bub.className='bubble';
+  bub.innerHTML=text.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<b>$1</b>').replace(/_(.*?)_/g,'<i>$1</i>');
+  div.appendChild(av);div.appendChild(bub);wrap.appendChild(div);wrap.scrollTop=wrap.scrollHeight;
+  history.push({role:role==='mentor'?'assistant':'user',content:text});
+}
+function showTyping(){
+  const wrap=document.getElementById('chat-msgs'),div=document.createElement('div');
+  div.className='msg mentor';div.id='typing';
+  const av=document.createElement('div');av.className='av m';av.textContent='M';
+  const dots=document.createElement('div');dots.className='typing-dots';dots.innerHTML='<span></span><span></span><span></span>';
+  div.appendChild(av);div.appendChild(dots);wrap.appendChild(div);wrap.scrollTop=wrap.scrollHeight;
+}
+function hideTyping(){const el=document.getElementById('typing');if(el)el.remove();}
+async function handleSend(){
+  const inp=document.getElementById('chat-input'),msg=inp.value.trim();
+  if(!msg)return;inp.value='';inp.style.height='auto';
+  addMsg('user',msg);showTyping();
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:SYSTEM,messages:history.slice(-12)})});
+    const data=await res.json();hideTyping();addMsg('mentor',data.content&&data.content[0]?data.content[0].text:'Steh auf. Mach weiter.');
+  }catch(e){hideTyping();addMsg('mentor','Verbindungsfehler – aber das ist keine Ausrede. Was willst du heute noch schaffen?');}
+}
+function quickMsg(msg){showTab('chat');setTimeout(function(){document.getElementById('chat-input').value=msg;handleSend();},100);}
+document.getElementById('chat-input').addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();handleSend();}});
+document.getElementById('chat-input').addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px';});
+var q=QUOTES[new Date().getDate()%QUOTES.length];
+document.getElementById('quoteTxt').textContent=q.t;
+document.getElementById('quoteAuth').textContent='— '+q.a;
+document.getElementById('streakN').textContent='🔥'+streak;
+renderChecklist();
+var h=new Date().getHours(),g=h<12?'Morgen':h<18?'Tag':'Abend';
+setTimeout(function(){addMsg('mentor','**Guten '+g+', Thomas.** Ich bin dein Mentor.\n\nKein Weichspülen. Keine Ausreden. Nur die Wahrheit: **Du hast alles was du brauchst** – du nutzt es nur noch nicht.\n\nSchreib mir wie dein Tag läuft. Ich bin hier. _Let\'s get to work._');},300);
+</script>
+</body>
+</html>
